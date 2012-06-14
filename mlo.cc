@@ -1,8 +1,34 @@
 namespace MetaLoopOptimizer {
 
-	struct Null {
-		typedef Null value;
-	};
+	struct Null  {};
+
+
+	/* Constants */
+
+	template <typename T, int I>
+	struct Constant { typedef T return_type; static const T value = I; };
+
+	template <bool I> struct Bool : Constant<bool, I> {};
+	template <short I> struct Short : Constant<int, I> {};
+	template <unsigned short I> struct UShort : Constant<unsigned int, I> {};
+	template <int I> struct Int : Constant<int, I> {};
+	template <unsigned int I> struct UInt : Constant<unsigned int, I> {};
+	template <long I> struct Long : Constant<long, I> {};
+	template <unsigned long I> struct ULong : Constant<unsigned long, I> {};
+
+	typedef Bool<false> False;
+	typedef Bool<true> True;
+
+	typedef Int<0> Zero;
+	typedef Int<1> One;
+	typedef Int<2> Two;
+
+	typedef UInt<0> UZero;
+	typedef UInt<1> UOne;
+	typedef UInt<2> UTwo;
+
+
+	/* Data structures */
 
 	struct List
 	{
@@ -65,6 +91,54 @@ namespace MetaLoopOptimizer {
 				apply<TTail, Func>::call ();
 			}
 		};
+	}; // List
+
+	struct Expr
+	{
+		template <typename  T, int V>
+		struct Const {
+			typedef T return_type;
+			static const T value = V;
+		};
+		template <typename A, typename B>
+		struct Add {
+			typedef typename A::return_type return_type;
+			static const return_type value = A::value + B::value;
+		};
+		template <typename A, typename B>
+		struct Sub {
+			typedef typename A::return_type return_type;
+			static const return_type value = A::value - B::value;
+		};
+		template <typename A, typename B>
+		struct Mul {
+			typedef typename A::return_type return_type;
+			static const return_type value = A::value * B::value;
+		};
+		template <typename A, typename B>
+		struct Div {
+			typedef typename A::return_type return_type;
+			static const return_type value = A::value / B::value;
+		};
+		template <typename A, typename B>
+		struct Mod {
+			typedef typename A::return_type return_type;
+			static const return_type value = A::value % B::value;
+		};
+		template <typename  T, typename Test, typename True, typename False>
+		struct Cond {
+			typedef T return_type;
+			static const T value = Test::value ? True::value : False::value;
+		};
+		template <typename  T, typename First, typename Second>
+		struct Comma {
+			typedef T return_type;
+			static const T value = (First::value, Second::value);
+		};
+	}; // Expr
+
+	struct Stmt
+	{
 	};
 
 } // MetaLoopOptimizer
@@ -95,7 +169,12 @@ main (void)
 	printf ("\n");
 
 	if (List::has<my_list, C>::call ())
-	  printf ("my_list has C\n");
+		printf ("my_list has C\n");
 	if (List::has<new_list, C>::call ())
-	  printf ("new_list has C\n");
+		printf ("new_list has C\n");
+
+
+	typedef Expr::Cond<int, False, One, Zero> false_cond;
+	printf ("false %d\n", false_cond::value);
+	printf ("1+2 %d\n", Expr::Add<One, UTwo>::value);
 }
