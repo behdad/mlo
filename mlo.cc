@@ -125,15 +125,15 @@ namespace MetaLoopOptimizer {
 			typedef typename A::return_type return_type;
 			static const return_type value = A::value % B::value;
 		};
-		template <typename  T, typename Test, typename True, typename False>
+		template <typename Test, typename True, typename False>
 		struct Cond {
-			typedef T return_type;
-			static const T value = Test::value ? True::value : False::value;
+			typedef typename True::return_type return_type;
+			static const return_type value = Test::value ? True::value : False::value;
 		};
-		template <typename  T, typename First, typename Second>
+		template <typename First, typename Second>
 		struct Comma {
-			typedef T return_type;
-			static const T value = (First::value, Second::value);
+			typedef typename Second::return_type return_type;
+			static const return_type value = (First::value, Second::value);
 		};
 	}; // Expr
 
@@ -174,7 +174,7 @@ main (void)
 		printf ("new_list has C\n");
 
 
-	typedef Expr::Cond<int, False, One, Zero> false_cond;
+	typedef Expr::Cond<False, One, Zero> false_cond;
 	printf ("false %d\n", false_cond::value);
 	printf ("1+2 %d\n", Expr::Add<One, UTwo>::value);
 }
