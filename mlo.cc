@@ -135,11 +135,16 @@ namespace MetaLoopOptimizer {
 			typedef typename Second::return_type return_type;
 			static const return_type value = (First::value, Second::value);
 		};
+		template <typename E>
+		struct Not {
+			typedef bool return_type;
+			static const return_type value = !E::value;
+		};
 	}; // Expr
 
 	struct Stmt
 	{
-	};
+	}; // Stmt
 
 } // MetaLoopOptimizer
 
@@ -177,4 +182,5 @@ main (void)
 	typedef Expr::Cond<False, One, Zero> false_cond;
 	printf ("false %d\n", false_cond::value);
 	printf ("1+2 %d\n", Expr::Add<One, UTwo>::value);
+	printf ("true %d\n", Expr::Not<False>::value);
 }
